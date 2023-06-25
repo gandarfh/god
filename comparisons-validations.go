@@ -8,7 +8,7 @@ func Eq(value interface{}, message ...string) Validation {
 		Func: func(v interface{}) error {
 			return validate.Var(v, fmt.Sprintf("eq=%v", value))
 		},
-		Message: getMessage(message, fmt.Sprintf("the value is not equal %v", value)),
+		Message: GetMessage(message, fmt.Sprintf("the value is not equal %v", value)),
 	}
 }
 
@@ -18,7 +18,7 @@ func Ne(value interface{}, message ...string) Validation {
 		Func: func(v interface{}) error {
 			return validate.Var(v, fmt.Sprintf("ne=%v", value))
 		},
-		Message: getMessage(message, fmt.Sprintf("the value is equal %v", value)),
+		Message: GetMessage(message, fmt.Sprintf("the value is equal %v", value)),
 	}
 }
 
@@ -28,7 +28,7 @@ func Gt(value int, message ...string) Validation {
 		Func: func(v interface{}) error {
 			return validate.Var(v, fmt.Sprintf("gt=%d", value))
 		},
-		Message: getMessage(message, fmt.Sprintf("the value is not greater than %d", value)),
+		Message: GetMessage(message, fmt.Sprintf("the value is not greater than %d", value)),
 	}
 }
 
@@ -38,7 +38,7 @@ func Gte(value int, message ...string) Validation {
 		Func: func(v interface{}) error {
 			return validate.Var(v, fmt.Sprintf("gte=%d", value))
 		},
-		Message: getMessage(message, fmt.Sprintf("the value is not greater than or equal %d", value)),
+		Message: GetMessage(message, fmt.Sprintf("the value is not greater than or equal %d", value)),
 	}
 }
 
@@ -48,7 +48,7 @@ func Lt(value int, message ...string) Validation {
 		Func: func(v interface{}) error {
 			return validate.Var(v, fmt.Sprintf("lt=%d", value))
 		},
-		Message: getMessage(message, fmt.Sprintf("the value is not less than %d", value)),
+		Message: GetMessage(message, fmt.Sprintf("the value is not less than %d", value)),
 	}
 }
 
@@ -58,6 +58,6 @@ func Lte(value int, message ...string) Validation {
 		Func: func(v interface{}) error {
 			return validate.Var(v, fmt.Sprintf("lte=%d", value))
 		},
-		Message: getMessage(message, fmt.Sprintf("the value is not less than or equal %d", value)),
+		Message: GetMessage(message, fmt.Sprintf("the value is not less than or equal %d", value)),
 	}
 }

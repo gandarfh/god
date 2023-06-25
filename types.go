@@ -7,7 +7,7 @@ import (
 
 type typeAssertFunc func(interface{}) (interface{}, bool)
 
-func commonValidation(v []Validation, value interface{}, typeName string, typeAssertFunc typeAssertFunc) error {
+func CommonValidation(v []Validation, value interface{}, typeName string, typeAssertFunc typeAssertFunc) error {
 	// Ordena as validações por peso
 	sort.Slice(v, func(i, j int) bool {
 		return v[i].Weight > v[j].Weight
@@ -46,7 +46,7 @@ func commonValidation(v []Validation, value interface{}, typeName string, typeAs
 // String for string type
 func String(v ...Validation) Schema {
 	return func(value interface{}) error {
-		return commonValidation(v, value, "string", func(val interface{}) (interface{}, bool) {
+		return CommonValidation(v, value, "string", func(val interface{}) (interface{}, bool) {
 			if out, ok := val.(string); ok {
 				return out, ok
 			}
@@ -61,7 +61,7 @@ func String(v ...Validation) Schema {
 // Float32 for float32 type
 func Float32(v ...Validation) Schema {
 	return func(value interface{}) error {
-		return commonValidation(v, value, "float", func(val interface{}) (interface{}, bool) {
+		return CommonValidation(v, value, "float", func(val interface{}) (interface{}, bool) {
 			if out, ok := val.(float32); ok {
 				return out, ok
 			}
@@ -76,7 +76,7 @@ func Float32(v ...Validation) Schema {
 // Float64 for float64 type
 func Float64(v ...Validation) Schema {
 	return func(value interface{}) error {
-		return commonValidation(v, value, "float64", func(val interface{}) (interface{}, bool) {
+		return CommonValidation(v, value, "float64", func(val interface{}) (interface{}, bool) {
 			if out, ok := val.(float64); ok {
 				return out, ok
 			}
@@ -91,7 +91,7 @@ func Float64(v ...Validation) Schema {
 // Int for int32 type
 func Int(v ...Validation) Schema {
 	return func(value interface{}) error {
-		return commonValidation(v, value, "int", func(val interface{}) (interface{}, bool) {
+		return CommonValidation(v, value, "int", func(val interface{}) (interface{}, bool) {
 			if out, ok := val.(int); ok {
 				return out, ok
 			}
@@ -106,7 +106,7 @@ func Int(v ...Validation) Schema {
 // Int64 for int64 type
 func Int64(v ...Validation) Schema {
 	return func(value interface{}) error {
-		return commonValidation(v, value, "int64", func(val interface{}) (interface{}, bool) {
+		return CommonValidation(v, value, "int64", func(val interface{}) (interface{}, bool) {
 			if out, ok := val.(int64); ok {
 				return out, ok
 			}
@@ -121,7 +121,7 @@ func Int64(v ...Validation) Schema {
 // Bool for bool type
 func Bool(v ...Validation) Schema {
 	return func(value interface{}) error {
-		return commonValidation(v, value, "bool", func(val interface{}) (interface{}, bool) {
+		return CommonValidation(v, value, "bool", func(val interface{}) (interface{}, bool) {
 			if out, ok := val.(bool); ok {
 				return out, ok
 			}

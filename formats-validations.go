@@ -8,7 +8,7 @@ func Email(message ...string) Validation {
 		Func: func(v interface{}) error {
 			return validate.Var(v, "email")
 		},
-		Message: getMessage(message, "Failed on email validation!"),
+		Message: GetMessage(message, "Failed on email validation!"),
 	}
 }
 
@@ -18,7 +18,7 @@ func Mongodb(message ...string) Validation {
 		Func: func(v interface{}) error {
 			return validate.Var(v, "mongodb")
 		},
-		Message: getMessage(message, "Failed on mongodb validation!"),
+		Message: GetMessage(message, "Failed on mongodb validation!"),
 	}
 }
 
@@ -28,6 +28,6 @@ func Datetime(datetime string, message ...string) Validation {
 		Func: func(v interface{}) error {
 			return validate.Var(v, fmt.Sprintf("datetime=%s", datetime))
 		},
-		Message: getMessage(message, "Failed on datatime validation!"),
+		Message: GetMessage(message, "Failed on datatime validation!"),
 	}
 }
