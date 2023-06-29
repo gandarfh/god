@@ -1,6 +1,9 @@
 package god
 
-import "fmt"
+import (
+	"fmt"
+	"strings"
+)
 
 func Boolean(message ...string) Validation {
 	return Validation{
@@ -49,5 +52,15 @@ func Number(message ...string) Validation {
 			return validate.Var(v, "number")
 		},
 		Message: GetMessage(message, "Failed on number validation!"),
+	}
+}
+
+func OneOf(options []string, message ...string) Validation {
+	return Validation{
+		Tag: "oneof",
+		Func: func(v interface{}) error {
+			return validate.Var(v, fmt.Sprintf("oneof=%s", strings.Join(options, " ")))
+		},
+		Message: GetMessage(message, "Failed on oneOf validation!"),
 	}
 }
