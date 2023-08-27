@@ -5,60 +5,81 @@ import (
 	"reflect"
 )
 
-type Map map[string]Schema
+type Map map[string]SchemaFunc
 
-func Object(m Map) Schema {
-	return func(value interface{}) error {
-		errors := make(map[string]error)
+var structFieldCache = make(map[reflect.Type][]reflect.StructField)
 
+func Object(m Map) SchemaFunc {
+	return func(value interface{}) Schema {
+		god_err := GodError{
+			errors: make(map[string]interface{}),
+		}
 		v := reflect.ValueOf(value)
+		schema := Schema{Type: "Object"}
 
 		switch v.Kind() {
 		case reflect.Map:
-			objectMap(value, m, errors)
+			objectMap(value, m, god_err)
 
 		case reflect.Struct:
-			objectStruct(value, m, errors)
+			objectStruct(value, m, god_err)
+
+		case reflect.Ptr:
+			value_of_pointer := structToMap(value)
+			objectMap(value_of_pointer, m, god_err)
 
 		default:
-			return fmt.Errorf("value is neither a map nor a struct")
+			err := fmt.Errorf("value is neither a map nor a struct. Is: %v", v.Kind())
+			schema.Error = err
 		}
 
-		if len(errors) > 0 {
-			return fmt.Errorf("%v", errors)
+		if len(god_err.errors) > 0 {
+			schema.Error = god_err
 		}
 
-		return nil
+		return schema
 	}
 }
 
-func objectMap(value interface{}, m Map, errors map[string]error) error {
+func objectMap(value interface{}, m Map, god_err GodError) error {
 	// Trate como um map se for um map
 	mapValue, ok := value.(map[string]interface{})
 	if !ok {
 		return fmt.Errorf("value is not a map")
 	}
 
-	for field, validation := range m {
-		fieldValue, _ := mapValue[field]
-		if err := validation(fieldValue); err != nil {
-			errors[field] = err
+	for key, validation := range m {
+		fieldValue, _ := mapValue[key]
+		if err := validation(fieldValue); err.Error != nil {
+			god_err.errors[key] = err.Error
 		}
 	}
 
 	return nil
 }
 
-func objectStruct(value interface{}, m Map, errors map[string]error) error {
+func objectStruct(value interface{}, items Map, god_err GodError) error {
 	v := reflect.ValueOf(value)
 	t := v.Type()
 
+	// Tente obter os campos do cache
+	fields, ok := structFieldCache[t]
+	if !ok {
+		fields = make([]reflect.StructField, t.NumField())
+		for i := 0; i < t.NumField(); i++ {
+			fields[i] = t.Field(i)
+		}
+		structFieldCache[t] = fields
+	}
+
 	// Trate como uma struct se for uma struct
-	for key, validation := range m {
+	for key, validation := range items {
 		var fieldName string
+
 		for i := 0; i < t.NumField(); i++ {
 			field := t.Field(i)
 			jsonTag := field.Tag.Get("json")
+
 			if jsonTag == key {
 				fieldName = field.Name
 				break
@@ -66,21 +87,39 @@ func objectStruct(value interface{}, m Map, errors map[string]error) error {
 		}
 
 		if fieldName == "" {
-			errors[key] = fmt.Errorf("unknown field")
+			god_err.errors[key] = fmt.Errorf("unknown field")
 			continue
 		}
 
 		fieldValue := v.FieldByName(fieldName)
 		if !fieldValue.IsValid() {
-			errors[key] = fmt.Errorf("field not found in struct")
+			god_err.errors[key] = fmt.Errorf("field not found in struct")
 			continue
 		}
 
 		err := validation(fieldValue.Interface())
-		if err != nil {
-			errors[key] = err
+		if err.Error != nil {
+			god_err.errors[key] = err.Error
 		}
 	}
 
 	return nil
+}
+
+func structToMap(obj interface{}) map[string]interface{} {
+	out := make(map[string]interface{})
+	v := reflect.ValueOf(obj)
+	if v.Kind() == reflect.Ptr {
+		v = v.Elem()
+	}
+	t := v.Type()
+	for i := 0; i < v.NumField(); i++ {
+		field := t.Field(i)
+		key := field.Tag.Get("json")
+		if key == "" {
+			key = field.Name
+		}
+		out[key] = v.Field(i).Interface()
+	}
+	return out
 }

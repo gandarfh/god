@@ -92,10 +92,10 @@ func TestValidationFunctions(t *testing.T) {
 	for _, testCase := range tests {
 		t.Run(testCase.name, func(t *testing.T) {
 			err := testCase.validation.Func(testCase.value)
-			if testCase.expectErr && err == nil {
+			if testCase.expectErr && err.Error == nil {
 				t.Errorf("Expected error, got nil")
 			}
-			if !testCase.expectErr && err != nil {
+			if !testCase.expectErr && err.Error != nil {
 				t.Errorf("Unexpected error: %v", err)
 			}
 		})

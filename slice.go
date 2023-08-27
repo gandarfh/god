@@ -7,9 +7,9 @@ import (
 	"strings"
 )
 
-func Slice(vf Schema, v ...Validation) Schema {
-	return func(value interface{}) error {
-		// Ordena as validações por peso
+func Slice(vf SchemaFunc, v ...Validation) SchemaFunc {
+	return func(value interface{}) Schema {
+		schema := Schema{}
 		sort.Slice(v, func(i, j int) bool {
 			return v[i].Weight > v[j].Weight
 		})
@@ -21,39 +21,35 @@ func Slice(vf Schema, v ...Validation) Schema {
 		}
 
 		if !isRequired && rv.Len() == 0 {
-			return nil
+			schema.Error = nil
 		}
 
-		// Valida se é um slice
 		if rv.Kind() != reflect.Slice {
-			return fmt.Errorf("value is not a slice")
+			schema.Error = fmt.Errorf("value is not a slice")
 		}
 
 		var errors MultiError
 
-		// Aplica as validações
 		for _, validation := range v {
-			// Aplica a validação
 			err := validation.Func(value)
-			if err != nil {
+			if err.Error != nil {
 				errors = append(errors, fmt.Errorf(validation.Message))
 			}
 		}
 
-		// Aplica a função de validação a cada item na fatia.
 		for i := 0; i < rv.Len(); i++ {
 			item := rv.Index(i).Interface()
 
-			if err := vf(item); err != nil {
+			if err := vf(item); err.Error != nil {
 				errors = append(errors, fmt.Errorf("index %d: %v", i, err))
 			}
 		}
 
 		if len(errors) > 0 {
-			return errors
+			schema.Error = errors
 		}
 
-		return nil
+		return schema
 	}
 }
 

@@ -9,31 +9,32 @@ import (
 
 func TestSlice(t *testing.T) {
 	t.Run("it should validate each item in the slice", func(t *testing.T) {
-		vf := func(value interface{}) error {
+		vf := func(value interface{}) god.Schema {
+			schema := god.Schema{}
 			v, ok := value.(string)
 			if !ok {
-				return fmt.Errorf("value is not a string")
+				schema.Error = fmt.Errorf("value is not a string")
 			}
 			if v != "ok" {
-				return fmt.Errorf("value is not 'ok'")
+				schema.Error = fmt.Errorf("value is not 'ok'")
 			}
-			return nil
+			return schema
 		}
 
 		slice := []string{"ok", "not ok", "ok"}
 		err := god.Slice(vf)(slice)
-		if err == nil {
+		if err.Error == nil {
 			t.Fatal("expected error but got none")
 		}
 
-		me, ok := err.(god.MultiError)
+		me, ok := err.Error.(god.MultiError)
 		if !ok {
 			t.Fatalf("expected MultiError but got %T", err)
 		}
 		if len(me) != 1 {
 			t.Fatalf("expected 1 error but got %d", len(me))
 		}
-		if me[0].Error() != "index 1: value is not 'ok'" {
+		if me[0].Error() != "index 1: {value is not 'ok' map[] }" {
 			t.Fatalf("unexpected error message: %v", me[0])
 		}
 	})

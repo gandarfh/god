@@ -24,7 +24,7 @@ func TestObject(t *testing.T) {
 		}
 
 		err := userSchema(user)
-		if err != nil {
+		if err.Error != nil {
 			t.Errorf("expected no error, got %v", err)
 		}
 	})
@@ -36,7 +36,7 @@ func TestObject(t *testing.T) {
 		}
 
 		err := userSchema(user)
-		if err == nil {
+		if err.Error == nil {
 			t.Errorf("expected error, got nil")
 		}
 	})
@@ -45,7 +45,7 @@ func TestObject(t *testing.T) {
 		value := "not a struct"
 
 		err := userSchema(value)
-		if err == nil {
+		if err.Error == nil {
 			t.Errorf("expected error, got nil")
 		}
 	})
@@ -57,7 +57,7 @@ func TestObject(t *testing.T) {
 		}
 
 		err := userSchema(user)
-		if err != nil {
+		if err.Error != nil {
 			t.Errorf("expected no error, got %v", err)
 		}
 	})
@@ -69,7 +69,7 @@ func TestObject(t *testing.T) {
 		}
 
 		err := userSchema(user)
-		if err == nil {
+		if err.Error == nil {
 			t.Errorf("expected error, got nil")
 		}
 	})
@@ -78,7 +78,7 @@ func TestObject(t *testing.T) {
 		value := "not a map"
 
 		err := userSchema(value)
-		if err == nil {
+		if err.Error == nil {
 			t.Errorf("expected error, got nil")
 		}
 	})
@@ -128,7 +128,7 @@ func TestObjectValidation(t *testing.T) {
 	}
 
 	// Perform the validation
-	if err := schema(testObj); err != nil {
+	if err := schema(testObj); err.Error != nil {
 		t.Errorf("Unexpected error: %v", err)
 	}
 
@@ -146,7 +146,7 @@ func TestObjectValidation(t *testing.T) {
 	}
 
 	// Perform the validation
-	if err := schema(testMap); err != nil {
+	if err := schema(testMap); err.Error != nil {
 		t.Errorf("Unexpected error: %v", err)
 	}
 }
