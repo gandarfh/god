@@ -79,16 +79,13 @@ func objectStruct(value interface{}, items Map, god_err GodError) error {
 		for i := 0; i < t.NumField(); i++ {
 			field := t.Field(i)
 			jsonTag := field.Tag.Get("json")
+			queryTag := field.Tag.Get("query")
+			godTag := field.Tag.Get("god")
 
-			if jsonTag == key {
+			if jsonTag == key || queryTag == key || godTag == key {
 				fieldName = field.Name
 				break
 			}
-		}
-
-		if fieldName == "" {
-			god_err.errors[key] = fmt.Errorf("unknown field")
-			continue
 		}
 
 		fieldValue := v.FieldByName(fieldName)
