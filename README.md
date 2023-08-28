@@ -83,9 +83,9 @@ import (
 	"strings"
 )
 
-func CustomLengthString(v ...Validation) Schema {
-	return func(value interface{}) error {
-		return CommonValidation(v, value, "string", func(val interface{}) (interface{}, bool) {
+func CustomLengthString(v ...god.Validation) god.SchemaFunc {
+	return func(value interface{}) god.Schema {
+		return god.CommonTypeValidation(v, value, "string", func(val interface{}) (interface{}, bool) {
 			strVal, ok := val.(string)
 			return strVal, ok && len(strings.TrimSpace(strVal)) == 3
 		})
@@ -124,22 +124,23 @@ No caso acima, a função `CustomLengthString` é uma função de validação pe
 Para criar uma validação personalizada, você precisará fornecer sua própria função de validação. Por exemplo, você pode criar uma função de validação `MyCustomValidation` que exige que uma string seja "hello".
 
 ```go
-func MyCustomValidation(message ...string) Validation {
+func MyCustomValidation(message ...string) god.Validation {
 	return Validation{
 		Tag: "custom",
-		Func: func(v interface{}) error {
+		Message: god.GetMessage(message, "Failed on custom validation!"),
+		Func: func(v interface{}) Schema {
+      schema := god.Schema{}
 			str, ok := v.(string)
 			if !ok {
-				return fmt.Errorf("value is not a string")
+				schema.Error = fmt.Errorf("value is not a string")
 			}
 
 			if str != "hello" {
-				return fmt.Errorf(god.GetMessage(message, "value is not 'hello'"))
+				schema.Error = fmt.Errorf(god.GetMessage(message, "value is not 'hello'"))
 			}
 
-			return nil
+			return schema
 		},
-		Message: god.GetMessage(message, "Failed on custom validation!"),
 	}
 }
 ```
