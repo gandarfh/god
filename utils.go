@@ -2,6 +2,7 @@ package god
 
 import (
 	"fmt"
+	"reflect"
 	"sort"
 )
 
@@ -28,6 +29,10 @@ func CommonPlaygroundValidation(tag string, messages []string, customFunc ...fun
 	}
 }
 
+func isZeroOfUnderlyingType(x interface{}) bool {
+	return x == reflect.Zero(reflect.TypeOf(x)).Interface()
+}
+
 func CommonTypeValidation(v []Validation, value interface{}, typeName string, typeAssertFunc typeAssertFunc) Schema {
 	schema := Schema{}
 	// Ordena as validações por peso
@@ -42,9 +47,10 @@ func CommonTypeValidation(v []Validation, value interface{}, typeName string, ty
 
 	// Valida se é um campo opcional
 	// Caso tenha nenhum valor deve ignorar as validações
-	_, ok := typeAssertFunc(value)
-	if !isRequired && !ok {
+	out, ok := typeAssertFunc(value)
+	if !isRequired && !ok || !isRequired && isZeroOfUnderlyingType(out) {
 		schema.Error = nil
+		return schema
 	}
 
 	// Primeiro, verifica se o valor é do tipo correto
