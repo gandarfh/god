@@ -51,6 +51,10 @@ func Float64(v ...Validation) SchemaFunc {
 func Int(v ...Validation) SchemaFunc {
 	return func(value interface{}) Schema {
 		return CommonTypeValidation(v, value, "int", func(val interface{}) (interface{}, bool) {
+			floatValue, ok := value.(float64)
+			if ok {
+				val = int(floatValue)
+			}
 			if out, ok := val.(int); ok {
 				return out, ok
 			}
@@ -66,6 +70,10 @@ func Int(v ...Validation) SchemaFunc {
 func Int64(v ...Validation) SchemaFunc {
 	return func(value interface{}) Schema {
 		return CommonTypeValidation(v, value, "int64", func(val interface{}) (interface{}, bool) {
+			floatValue, ok := value.(float64)
+			if ok {
+				val = int64(floatValue)
+			}
 			if out, ok := val.(int64); ok {
 				return out, ok
 			}
