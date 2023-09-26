@@ -14,10 +14,14 @@ func Slice(vf SchemaFunc, v ...Validation) SchemaFunc {
 			return v[i].Weight > v[j].Weight
 		})
 
-		rv := reflect.ValueOf(value)
 		var isRequired bool
 		if len(v) > 0 {
 			isRequired = v[0].Tag == "required"
+		}
+
+		rv := reflect.ValueOf([]interface{}{})
+		if value != nil {
+			rv = reflect.ValueOf(value)
 		}
 
 		if !isRequired && rv.Len() == 0 {

@@ -14,10 +14,15 @@ func Object(m Map) SchemaFunc {
 		god_err := GodError{
 			errors: make(map[string]interface{}),
 		}
-		v := reflect.ValueOf(value)
+
+		rv := reflect.ValueOf(map[string]interface{}{})
+		if value != nil {
+			rv = reflect.ValueOf(value)
+		}
+
 		schema := Schema{Type: "Object"}
 
-		switch v.Kind() {
+		switch rv.Kind() {
 		case reflect.Map:
 			objectMap(value, m, god_err)
 
@@ -29,7 +34,7 @@ func Object(m Map) SchemaFunc {
 			objectMap(value_of_pointer, m, god_err)
 
 		default:
-			err := fmt.Errorf("value is neither a map nor a struct. Is: %v", v.Kind())
+			err := fmt.Errorf("value is neither a map nor a struct. Is: %v", rv.Kind())
 			schema.Error = err
 		}
 
@@ -46,6 +51,10 @@ func objectMap(value interface{}, m Map, god_err GodError) error {
 	mapValue, ok := value.(map[string]interface{})
 	if !ok {
 		return fmt.Errorf("value is not a map")
+	}
+
+	if len(mapValue) == 0 {
+		return nil
 	}
 
 	for key, validation := range m {
@@ -70,6 +79,10 @@ func objectStruct(value interface{}, items Map, god_err GodError) error {
 			fields[i] = t.Field(i)
 		}
 		structFieldCache[t] = fields
+	}
+
+	if len(fields) == 0 {
+		return nil
 	}
 
 	// Trate como uma struct se for uma struct
