@@ -21,12 +21,10 @@ func String(v ...Validation) SchemaFunc {
 func Float32(v ...Validation) SchemaFunc {
 	return func(value interface{}) Schema {
 		return CommonTypeValidation(v, value, "float", func(val interface{}) (interface{}, bool) {
-			if out, ok := val.(float32); ok {
-				return out, ok
+			if out, ok := ConvertToNumeric(value); ok {
+				return out.ToFloat32(), ok
 			}
-			if out, ok := val.(*float32); ok {
-				return out, ok
-			}
+
 			return nil, false
 		})
 	}
@@ -36,12 +34,10 @@ func Float32(v ...Validation) SchemaFunc {
 func Float64(v ...Validation) SchemaFunc {
 	return func(value interface{}) Schema {
 		return CommonTypeValidation(v, value, "float64", func(val interface{}) (interface{}, bool) {
-			if out, ok := val.(float64); ok {
-				return out, ok
+			if out, ok := ConvertToNumeric(value); ok {
+				return out.ToFloat64(), ok
 			}
-			if out, ok := val.(*float64); ok {
-				return out, ok
-			}
+
 			return nil, false
 		})
 	}
@@ -51,12 +47,10 @@ func Float64(v ...Validation) SchemaFunc {
 func Int(v ...Validation) SchemaFunc {
 	return func(value interface{}) Schema {
 		return CommonTypeValidation(v, value, "int", func(val interface{}) (interface{}, bool) {
-			if out, ok := val.(int); ok {
-				return out, ok
+			if out, ok := ConvertToNumeric(value); ok {
+				return out.ToInt32(), ok
 			}
-			if out, ok := val.(*int); ok {
-				return out, ok
-			}
+
 			return nil, false
 		})
 	}
@@ -66,12 +60,10 @@ func Int(v ...Validation) SchemaFunc {
 func Int64(v ...Validation) SchemaFunc {
 	return func(value interface{}) Schema {
 		return CommonTypeValidation(v, value, "int64", func(val interface{}) (interface{}, bool) {
-			if out, ok := val.(int64); ok {
-				return out, ok
+			if out, ok := ConvertToNumeric(value); ok {
+				return out.ToInt64(), ok
 			}
-			if out, ok := val.(*int64); ok {
-				return out, ok
-			}
+
 			return nil, false
 		})
 	}
