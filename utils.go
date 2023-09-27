@@ -45,6 +45,7 @@ func CommonTypeValidation(v []Validation, value interface{}, typeName string, ty
 	_, ok := typeAssertFunc(value)
 	if !isRequired && !ok {
 		schema.Error = nil
+		return schema
 	}
 
 	// Primeiro, verifica se o valor é do tipo correto
