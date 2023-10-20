@@ -53,10 +53,6 @@ func objectMap(value interface{}, m Map, god_err GodError) error {
 		return fmt.Errorf("value is not a map")
 	}
 
-	if len(mapValue) == 0 {
-		return nil
-	}
-
 	for key, validation := range m {
 		fieldValue, _ := mapValue[key]
 		if err := validation(fieldValue); err.Error != nil {
